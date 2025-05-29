@@ -3,14 +3,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { CheckCircle, AlertTriangle, Lightbulb, Palette, AlignHorizontalDistributeCenter, Eye, ThumbsUp } from "lucide-react";
+import { AlertTriangle, CheckCircle, Eye, Lightbulb, Palette, ThumbsUp, AlignHorizontalDistributeCenter } from "lucide-react";
 import type { SuggestDesignImprovementsOutput } from "@/ai/flows/suggest-design-improvements";
 
 interface AnalysisResult {
   flaws: string[];
-  suggestions: string[]; // These are general suggestions from analyzeDesignImage
-  improvements: SuggestDesignImprovementsOutput['improvements']; // These are detailed improvements from suggestDesignImprovements
+  suggestions: string[];
+  improvements: SuggestDesignImprovementsOutput['improvements'];
 }
 
 interface AnalysisResultsProps {
@@ -59,17 +58,16 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
+          <div className="p-4 bg-destructive/10 border border-destructive/50 rounded-md">
+            <p className="text-destructive">{error}</p>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   if (!results) {
-    return null; // No analysis initiated yet
+    return null; 
   }
   
   const hasContent = results.flaws.length > 0 || results.improvements.length > 0 || results.suggestions.length > 0;
@@ -81,7 +79,7 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
           <CheckCircle className="h-7 w-7 text-primary" />
           Analysis Complete!
         </CardTitle>
-        <CardDescription>Here&apos;s what Design Alchemist found in your design. Expand sections to see details:</CardDescription>
+        <CardDescription>Here&apos;s what Design Alchemist found. Expand sections to see details:</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {!hasContent ? (
@@ -97,26 +95,29 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
                 <AccordionTrigger className="hover:no-underline">
                   <div className="flex flex-1 items-center gap-2 text-lg font-semibold">
                     <AlertTriangle className="h-6 w-6 text-destructive" />
-                    Identified Flaws ({results.flaws.length})
+                    Identified Issues ({results.flaws.length})
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-3 pt-4">
                     {results.flaws.map((flaw, index) => (
-                      <Alert variant="destructive" key={`flaw-${index}`}>
-                        <AlertTriangle className="h-4 w-4" /> 
-                        <AlertTitle className="text-destructive">Flaw #{index + 1}</AlertTitle>
-                        <AlertDescription className="text-foreground"> 
-                          {flaw}
-                        </AlertDescription>
-                      </Alert>
+                      <div key={`flaw-${index}`} className="p-4 border border-destructive/30 rounded-lg shadow-sm bg-card space-y-2 hover:shadow-md transition-shadow">
+                        <div className="flex items-start gap-2">
+                          <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+                          <div className="flex-1">
+                            <h4 className="text-md font-semibold text-destructive">Issue #{index + 1}</h4>
+                            <p className="text-sm text-foreground/90 mt-1">
+                              {flaw}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </AccordionContent>
               </AccordionItem>
             )}
             
-            {/* Display initial suggestions from analyzeDesignImage if they exist and if detailed improvements are not the primary source */}
             {results.suggestions.length > 0 && results.improvements.length === 0 && (
               <AccordionItem value="initial-suggestions">
                 <AccordionTrigger className="hover:no-underline">
@@ -146,17 +147,17 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
                 <AccordionContent className="pt-4">
                   <div className="space-y-4">
                     {results.improvements.map((item, index) => (
-                      <div key={`improvement-${index}`} className="p-4 border border-border/70 rounded-lg shadow-sm bg-card space-y-3">
+                      <div key={`improvement-${index}`} className="p-4 border border-border/70 rounded-lg shadow-sm bg-card space-y-3 hover:shadow-md transition-shadow">
                         <div className="flex items-center gap-2">
                           {getIconForArea(item.area)}
                           <h4 className="font-semibold text-base text-primary">{item.area}</h4>
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-foreground">Suggestion:</p>
+                            <p className="text-sm font-medium text-foreground">Suggestion:</p>
                             <p className="text-base text-foreground/90">{item.suggestion}</p>
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-muted-foreground">Reasoning:</p>
+                            <p className="text-sm font-medium text-muted-foreground">Reasoning:</p>
                             <p className="text-sm text-muted-foreground/90">{item.reasoning}</p>
                         </div>
                       </div>
@@ -171,3 +172,4 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
     </Card>
   );
 }
+
