@@ -95,8 +95,8 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
             {results.flaws.length > 0 && (
               <AccordionItem value="flaws">
                 <AccordionTrigger className="hover:no-underline">
-                  <div className="flex flex-1 items-center gap-2 text-xl font-semibold text-destructive">
-                    <AlertTriangle className="h-6 w-6" />
+                  <div className="flex flex-1 items-center gap-2 text-xl font-semibold">
+                    <AlertTriangle className="h-6 w-6 text-destructive" />
                     Identified Flaws ({results.flaws.length})
                   </div>
                 </AccordionTrigger>
@@ -104,9 +104,11 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
                   <div className="space-y-3 pt-4">
                     {results.flaws.map((flaw, index) => (
                       <Alert variant="destructive" key={`flaw-${index}`}>
-                        <AlertTriangle className="h-4 w-4" />
-                        <AlertTitle>Flaw #{index + 1}</AlertTitle>
-                        <AlertDescription>{flaw}</AlertDescription>
+                        <AlertTriangle className="h-4 w-4" /> {/* Icon will be text-destructive due to variant */}
+                        <AlertTitle className="text-destructive">Flaw #{index + 1}</AlertTitle> {/* Explicitly destructive, or inherits */}
+                        <AlertDescription className="text-foreground"> {/* Override to main text color */}
+                          {flaw}
+                        </AlertDescription>
                       </Alert>
                     ))}
                   </div>
