@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle, AlertTriangle, Lightbulb, Palette, AlignHorizontalDistributeCenter, Eye, ThumbsUp } from "lucide-react";
 import type { SuggestDesignImprovementsOutput } from "@/ai/flows/suggest-design-improvements";
 
@@ -91,7 +91,7 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
             <p className="text-muted-foreground">Your design looks good based on the initial analysis.</p>
           </div>
         ) : (
-          <Accordion type="multiple" className="w-full" collapsible>
+          <Accordion type="multiple" className="w-full">
             {results.flaws.length > 0 && (
               <AccordionItem value="flaws">
                 <AccordionTrigger className="hover:no-underline">
@@ -105,6 +105,7 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
                     {results.flaws.map((flaw, index) => (
                       <Alert variant="destructive" key={`flaw-${index}`}>
                         <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>Flaw #{index + 1}</AlertTitle>
                         <AlertDescription>{flaw}</AlertDescription>
                       </Alert>
                     ))}
@@ -125,8 +126,8 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
                   <div className="pt-4">
                     <Accordion type="single" collapsible className="w-full">
                       {results.improvements.map((item, index) => (
-                        <AccordionItem value={`improvement-item-${index}`} key={`improvement-${index}`} className="border-b border-border/70">
-                          <AccordionTrigger className="text-left hover:no-underline py-4">
+                        <AccordionItem value={`improvement-item-${index}`} key={`improvement-${index}`} className="border-b border-border/70 last:border-b-0">
+                          <AccordionTrigger className="text-left hover:no-underline py-4 text-base">
                             <div className="flex items-center gap-3">
                               {getIconForArea(item.area)}
                               <span className="font-medium">{item.area}: {item.suggestion.substring(0, 70)}{item.suggestion.length > 70 ? "..." : ""}</span>
