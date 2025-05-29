@@ -74,7 +74,7 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
     <Card className="mt-8 w-full shadow-lg">
       <CardHeader>
         <CardTitle className="text-2xl flex items-center gap-2">
-          <CheckCircle className="h-7 w-7 text-primary" /> {/* Updated color */}
+          <CheckCircle className="h-7 w-7 text-primary" />
           Analysis Complete!
         </CardTitle>
         <CardDescription>Here&apos;s what Design Alchemist found in your design:</CardDescription>
@@ -82,7 +82,7 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
       <CardContent className="space-y-6">
         {!hasContent ? (
           <div className="text-center py-8">
-            <ThumbsUp className="h-12 w-12 text-primary mx-auto mb-4" /> {/* Updated color */}
+            <ThumbsUp className="h-12 w-12 text-primary mx-auto mb-4" />
             <p className="text-xl font-semibold">Great job! No immediate flaws or improvement suggestions found.</p>
             <p className="text-muted-foreground">Your design looks good based on the initial analysis.</p>
           </div>
@@ -96,7 +96,7 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
                 </h3>
                 <ul className="list-disc list-inside space-y-1 pl-2 bg-destructive/10 p-4 rounded-md">
                   {results.flaws.map((flaw, index) => (
-                    <li key={`flaw-${index}`} className="text-destructive-foreground/90">{flaw}</li>
+                    <li key={`flaw-${index}`} className="text-destructive">{flaw}</li>
                   ))}
                 </ul>
               </div>
