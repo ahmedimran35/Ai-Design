@@ -21,7 +21,9 @@ import { useToast } from "@/hooks/use-toast";
 import { loadStripe } from "@stripe/stripe-js";
 
 const FREE_TIER_LIMIT = 3;
-// IMPORTANT: This key will be loaded from an environment variable.
+
+// The Stripe Publishable Key is loaded from an environment variable.
+// It should be set in your .env file as NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 const STRIPE_PUBLIC_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY; 
 
 export function SubscriptionCard() {
@@ -38,7 +40,7 @@ export function SubscriptionCard() {
       toast({
         variant: "destructive",
         title: "Configuration Error",
-        description: "Stripe public key is not configured. Please contact support.",
+        description: "Stripe public key is not configured. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env file.",
       });
       console.error("Stripe public key is not set in environment variables (NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY).");
       setIsProcessingPayment(false);
@@ -161,7 +163,7 @@ export function SubscriptionCard() {
                   className="mt-6 w-full sm:w-auto shadow-md hover:shadow-lg transition-shadow" 
                   size="lg"
                   onClick={() => setIsUpgradeDialogOpen(true)}
-                  disabled={isProcessingPayment || !STRIPE_PUBLIC_KEY} // Disable if key not set
+                  disabled={isProcessingPayment || !STRIPE_PUBLIC_KEY} 
                 >
                   {isProcessingPayment ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -192,10 +194,15 @@ export function SubscriptionCard() {
             </AlertDialog>
             {!STRIPE_PUBLIC_KEY && (
               <p className="text-xs text-destructive mt-2">
-                Stripe payments are not configured. Admin: Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.
+                Stripe payments are not configured. Admin: Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env file.
               </p>
             )}
-            {STRIPE_PUBLIC_KEY && (
+            {STRIPE_PUBLIC_KEY && STRIPE_PUBLIC_KEY === "your_actual_stripe_publishable_key_here" && (
+               <p className="text-xs text-amber-600 mt-2">
+                Note: Using placeholder Stripe key. Update NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in .env for live testing.
+              </p>
+            )}
+            {STRIPE_PUBLIC_KEY && STRIPE_PUBLIC_KEY !== "your_actual_stripe_publishable_key_here" && (
               <p className="text-xs text-muted-foreground mt-3">
                 Click "Upgrade to Premium" to proceed with a secure Stripe payment.
               </p>
@@ -215,4 +222,3 @@ export function SubscriptionCard() {
     </Card>
   );
 }
-
