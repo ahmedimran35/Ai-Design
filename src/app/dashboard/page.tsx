@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { ImageUploadForm } from "@/components/dashboard/image-upload-form";
 import { AnalysisResults } from "@/components/dashboard/analysis-results";
+import { SubscriptionCard } from "@/components/dashboard/subscription-card";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,29 +22,24 @@ export default function DashboardPage() {
   const [isLoadingAnalysis, setIsLoadingAnalysis] = useState<boolean>(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth(); // Added user here for potential display
   const router = useRouter();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
-    // Client-side check for authentication.
-    // This effect now runs primarily on mount (and if router identity changes).
     const checkAuth = () => {
       const storedAuth = typeof window !== "undefined" ? localStorage.getItem("isAuthenticated") : null;
       if (storedAuth !== "true") {
-        // If localStorage doesn't confirm auth at mount, redirect.
         router.replace("/login?message=unauthorized");
       } else {
-        // localStorage is okay. Stop the "Verifying..." state.
-        // The page will then rely on `isAuthenticated` from AuthContext for rendering.
         setIsCheckingAuth(false);
       }
     };
     
-    if (typeof window !== "undefined") { // Ensure this logic only runs client-side
+    if (typeof window !== "undefined") {
         checkAuth();
     }
-  }, [router]); // Dependency array changed to only include router.
+  }, [router]);
 
   const handleAnalysisStart = () => {
     setIsLoadingAnalysis(true);
@@ -72,12 +68,7 @@ export default function DashboardPage() {
     );
   }
   
-  // After isCheckingAuth is false, rely on isAuthenticated from AuthContext.
   if (!isAuthenticated) {
-    // This block will be shown if AuthContext determines the user is not authenticated
-    // (e.g., after isCheckingAuth becomes false but isAuthenticated is still false).
-    // The useEffect should have redirected if localStorage was also missing the auth flag.
-    // This serves as a fallback UI.
     return (
          <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] text-center">
             <ShieldAlert className="h-16 w-16 text-destructive mb-4" />
@@ -87,17 +78,18 @@ export default function DashboardPage() {
     );
   }
 
-  // If isCheckingAuth is false AND isAuthenticated is true, show dashboard:
   return (
     <div className="space-y-8">
       <Card className="bg-gradient-to-br from-primary/5 via-background to-accent/5 border-none shadow-none">
         <CardHeader>
           <CardTitle className="text-3xl font-bold tracking-tight">Your Design Dashboard</CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Ready to refine your masterpiece? Upload your design below and let our AI provide expert feedback.
+            Welcome{user?.email ? `, ${user.email}` : ''}! Ready to refine your masterpiece?
           </CardDescription>
         </CardHeader>
       </Card>
+
+      <SubscriptionCard />
 
       <ImageUploadForm
         onAnalysisStart={handleAnalysisStart}
