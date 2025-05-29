@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CheckCircle, AlertTriangle, Lightbulb, Palette, AlignStart, Eye, ThumbsUp } from "lucide-react";
+import { CheckCircle, AlertTriangle, Lightbulb, Palette, AlignHorizontalDistributeCenter, Eye, ThumbsUp } from "lucide-react";
 import type { SuggestDesignImprovementsOutput } from "@/ai/flows/suggest-design-improvements"; // Ensure this type is correctly defined and exported
 
 interface AnalysisResult {
@@ -21,7 +21,7 @@ interface AnalysisResultsProps {
 const getIconForArea = (area: string) => {
   const lowerArea = area.toLowerCase();
   if (lowerArea.includes("color") || lowerArea.includes("palette")) return <Palette className="h-5 w-5 text-blue-500" />;
-  if (lowerArea.includes("align") || lowerArea.includes("layout")) return <AlignStart className="h-5 w-5 text-green-500" />;
+  if (lowerArea.includes("align") || lowerArea.includes("layout")) return <AlignHorizontalDistributeCenter className="h-5 w-5 text-green-500" />;
   if (lowerArea.includes("readab") || lowerArea.includes("typograph") || lowerArea.includes("text")) return <Eye className="h-5 w-5 text-purple-500" />;
   if (lowerArea.includes("hierarch") || lowerArea.includes("visual")) return <Lightbulb className="h-5 w-5 text-yellow-500" />;
   return <Lightbulb className="h-5 w-5 text-gray-500" />;
