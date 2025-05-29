@@ -9,8 +9,8 @@ import type { SuggestDesignImprovementsOutput } from "@/ai/flows/suggest-design-
 
 interface AnalysisResult {
   flaws: string[];
-  suggestions: string[];
-  improvements: SuggestDesignImprovementsOutput['improvements'];
+  suggestions: string[]; // These are general suggestions from analyzeDesignImage
+  improvements: SuggestDesignImprovementsOutput['improvements']; // These are detailed improvements from suggestDesignImprovements
 }
 
 interface AnalysisResultsProps {
@@ -22,9 +22,9 @@ interface AnalysisResultsProps {
 const getIconForArea = (area: string) => {
   const lowerArea = area.toLowerCase();
   if (lowerArea.includes("color") || lowerArea.includes("palette")) return <Palette className="h-5 w-5 text-accent" />;
-  if (lowerArea.includes("align") || lowerArea.includes("layout")) return <AlignHorizontalDistributeCenter className="h-5 w-5 text-primary" />;
+  if (lowerArea.includes("align") || lowerArea.includes("layout") || lowerArea.includes("spacing")) return <AlignHorizontalDistributeCenter className="h-5 w-5 text-primary" />;
   if (lowerArea.includes("readab") || lowerArea.includes("typograph") || lowerArea.includes("text") || lowerArea.includes("accessib")) return <Eye className="h-5 w-5 text-accent" />;
-  if (lowerArea.includes("hierarch") || lowerArea.includes("visual")) return <Lightbulb className="h-5 w-5 text-primary" />;
+  if (lowerArea.includes("hierarch") || lowerArea.includes("visual") || lowerArea.includes("focal") || lowerArea.includes("ui") || lowerArea.includes("usability") || lowerArea.includes("consisten")) return <Lightbulb className="h-5 w-5 text-primary" />;
   return <Lightbulb className="h-5 w-5 text-muted-foreground" />;
 };
 
@@ -72,7 +72,7 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
     return null; // No analysis initiated yet
   }
   
-  const hasContent = results.flaws.length > 0 || results.improvements.length > 0;
+  const hasContent = results.flaws.length > 0 || results.improvements.length > 0 || results.suggestions.length > 0;
 
   return (
     <Card className="mt-8 w-full shadow-lg">
@@ -115,13 +115,32 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
                 </AccordionContent>
               </AccordionItem>
             )}
+            
+            {/* Display initial suggestions from analyzeDesignImage if they exist and if detailed improvements are not the primary source */}
+            {results.suggestions.length > 0 && results.improvements.length === 0 && (
+              <AccordionItem value="initial-suggestions">
+                <AccordionTrigger className="hover:no-underline">
+                   <div className="flex flex-1 items-center gap-2 text-lg font-semibold text-primary">
+                    <Lightbulb className="h-6 w-6" />
+                    Initial Suggestions ({results.suggestions.length})
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4">
+                  <ul className="list-disc space-y-2 pl-5">
+                    {results.suggestions.map((suggestion, index) => (
+                      <li key={`initial-suggestion-${index}`} className="text-base text-foreground/90">{suggestion}</li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            )}
 
             {results.improvements.length > 0 && (
               <AccordionItem value="improvements">
                 <AccordionTrigger className="hover:no-underline">
                    <div className="flex flex-1 items-center gap-2 text-lg font-semibold text-primary">
                     <Lightbulb className="h-6 w-6" />
-                    Improvement Suggestions ({results.improvements.length})
+                    Detailed Improvement Suggestions ({results.improvements.length})
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="pt-4">
@@ -134,11 +153,11 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
                         </div>
                         <div>
                             <p className="text-sm font-semibold text-foreground">Suggestion:</p>
-                            <p className="text-sm text-foreground/90">{item.suggestion}</p>
+                            <p className="text-base text-foreground/90">{item.suggestion}</p>
                         </div>
                         <div>
-                            <p className="text-xs font-semibold text-muted-foreground">Reasoning:</p>
-                            <p className="text-xs text-muted-foreground/90">{item.reasoning}</p>
+                            <p className="text-sm font-semibold text-muted-foreground">Reasoning:</p>
+                            <p className="text-sm text-muted-foreground/90">{item.reasoning}</p>
                         </div>
                       </div>
                     ))}
@@ -152,4 +171,3 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
     </Card>
   );
 }
-
