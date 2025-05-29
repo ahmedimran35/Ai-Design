@@ -20,11 +20,11 @@ interface AnalysisResultsProps {
 
 const getIconForArea = (area: string) => {
   const lowerArea = area.toLowerCase();
-  if (lowerArea.includes("color") || lowerArea.includes("palette")) return <Palette className="h-5 w-5 text-blue-500" />;
-  if (lowerArea.includes("align") || lowerArea.includes("layout")) return <AlignHorizontalDistributeCenter className="h-5 w-5 text-green-500" />;
-  if (lowerArea.includes("readab") || lowerArea.includes("typograph") || lowerArea.includes("text")) return <Eye className="h-5 w-5 text-purple-500" />;
-  if (lowerArea.includes("hierarch") || lowerArea.includes("visual")) return <Lightbulb className="h-5 w-5 text-yellow-500" />;
-  return <Lightbulb className="h-5 w-5 text-gray-500" />;
+  if (lowerArea.includes("color") || lowerArea.includes("palette")) return <Palette className="h-5 w-5 text-accent" />;
+  if (lowerArea.includes("align") || lowerArea.includes("layout")) return <AlignHorizontalDistributeCenter className="h-5 w-5 text-primary" />;
+  if (lowerArea.includes("readab") || lowerArea.includes("typograph") || lowerArea.includes("text")) return <Eye className="h-5 w-5 text-accent" />;
+  if (lowerArea.includes("hierarch") || lowerArea.includes("visual")) return <Lightbulb className="h-5 w-5 text-primary" />;
+  return <Lightbulb className="h-5 w-5 text-muted-foreground" />;
 };
 
 export function AnalysisResults({ results, isLoading, error }: AnalysisResultsProps) {
@@ -74,7 +74,7 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
     <Card className="mt-8 w-full shadow-lg">
       <CardHeader>
         <CardTitle className="text-2xl flex items-center gap-2">
-          <CheckCircle className="h-7 w-7 text-green-600" />
+          <CheckCircle className="h-7 w-7 text-primary" /> {/* Updated color */}
           Analysis Complete!
         </CardTitle>
         <CardDescription>Here&apos;s what Design Alchemist found in your design:</CardDescription>
@@ -82,7 +82,7 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
       <CardContent className="space-y-6">
         {!hasContent ? (
           <div className="text-center py-8">
-            <ThumbsUp className="h-12 w-12 text-green-500 mx-auto mb-4" />
+            <ThumbsUp className="h-12 w-12 text-primary mx-auto mb-4" /> {/* Updated color */}
             <p className="text-xl font-semibold">Great job! No immediate flaws or improvement suggestions found.</p>
             <p className="text-muted-foreground">Your design looks good based on the initial analysis.</p>
           </div>
