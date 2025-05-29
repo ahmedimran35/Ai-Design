@@ -3,12 +3,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Alert, AlertDescription } from "@/components/ui/alert"; // Added Alert and AlertDescription
 import { CheckCircle, AlertTriangle, Lightbulb, Palette, AlignHorizontalDistributeCenter, Eye, ThumbsUp } from "lucide-react";
-import type { SuggestDesignImprovementsOutput } from "@/ai/flows/suggest-design-improvements"; // Ensure this type is correctly defined and exported
+import type { SuggestDesignImprovementsOutput } from "@/ai/flows/suggest-design-improvements";
 
 interface AnalysisResult {
   flaws: string[];
-  suggestions: string[]; // From initial analysis, might be less detailed
+  suggestions: string[];
   improvements: SuggestDesignImprovementsOutput['improvements'];
 }
 
@@ -90,31 +91,34 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
           <>
             {results.flaws.length > 0 && (
               <div>
-                <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
+                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                   <AlertTriangle className="h-6 w-6 text-destructive" />
                   Identified Flaws ({results.flaws.length})
                 </h3>
-                <ul className="list-disc list-inside space-y-1 pl-2 bg-destructive/10 p-4 rounded-md">
+                <div className="space-y-3">
                   {results.flaws.map((flaw, index) => (
-                    <li key={`flaw-${index}`} className="text-destructive">{flaw}</li>
+                    <Alert variant="destructive" key={`flaw-${index}`}>
+                      {/* The AlertTriangle icon is automatically rendered by the Alert component for destructive variant */}
+                      <AlertDescription>{flaw}</AlertDescription>
+                    </Alert>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
 
             {results.improvements.length > 0 && (
-              <div>
-                <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
+              <div className="pt-2"> {/* Added some top padding if flaws are present */}
+                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                   <Lightbulb className="h-6 w-6 text-primary" />
                   Improvement Suggestions ({results.improvements.length})
                 </h3>
                 <Accordion type="single" collapsible className="w-full">
                   {results.improvements.map((item, index) => (
                     <AccordionItem value={`item-${index}`} key={`improvement-${index}`} className="border-b border-border/70">
-                      <AccordionTrigger className="text-left hover:no-underline">
+                      <AccordionTrigger className="text-left hover:no-underline py-4">
                         <div className="flex items-center gap-3">
                           {getIconForArea(item.area)}
-                          <span className="font-medium">{item.area}: {item.suggestion.substring(0, 60)}{item.suggestion.length > 60 ? "..." : ""}</span>
+                          <span className="font-medium">{item.area}: {item.suggestion.substring(0, 70)}{item.suggestion.length > 70 ? "..." : ""}</span>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="space-y-2 pt-2 pb-4 px-2 bg-primary/5 rounded-b-md">
