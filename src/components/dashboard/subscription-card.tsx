@@ -36,24 +36,23 @@ export function SubscriptionCard() {
     setIsProcessingPayment(true);
     setIsUpgradeDialogOpen(false); // Close dialog
 
-    if (!STRIPE_PUBLIC_KEY) {
+    if (!STRIPE_PUBLIC_KEY || STRIPE_PUBLIC_KEY === "your_actual_stripe_publishable_key_here") {
       toast({
         variant: "destructive",
         title: "Configuration Error",
-        description: "Stripe public key is not configured. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env file.",
+        description: "Stripe public key is not configured correctly. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env file.",
       });
-      console.error("Stripe public key is not set in environment variables (NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY).");
+      console.error("Stripe public key is not set or is using the placeholder in environment variables (NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY).");
       setIsProcessingPayment(false);
       return;
     }
 
     toast({
-      title: "Initializing Upgrade...",
+      title: "Initializing Payment...",
       description: "Please wait while we prepare the secure checkout.",
     });
 
     try {
-      // Step 1: Load Stripe.js
       const stripe = await loadStripe(STRIPE_PUBLIC_KEY);
       if (!stripe) {
         toast({
@@ -65,65 +64,66 @@ export function SubscriptionCard() {
         return;
       }
       
-      // Simulate a brief delay as if contacting backend
-      await new Promise(resolve => setTimeout(resolve, 1000)); 
+      // STEP 1: Call your backend to create a Checkout Session
+      // ========================================================
+      // This is a SIMULATED backend call. In a real application, you would
+      // fetch this from an endpoint on your server, e.g., /api/create-checkout-session
+      // Your backend would use your Stripe SECRET KEY to create the session.
+      // ========================================================
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network latency
+      const simulatedSessionId = `cs_test_FAKE_${Date.now().toString(36)}`; // IMPORTANT: This is a FAKE session ID
+      // In a real app, replace `simulatedSessionId` with `sessionId` from your backend.
+      // const response = await fetch('/api/create-checkout-session', { method: 'POST' });
+      // if (!response.ok) throw new Error('Failed to create checkout session');
+      // const { sessionId } = await response.json();
+      // toast({ title: "Checkout Session Created", description: "Redirecting to Stripe..."});
+      // ========================================================
 
-      // Step 2: Simulate fetching a Checkout Session ID from your backend
-      // In a real application, this is where you'd call your backend API:
-      //   const response = await fetch('/api/create-checkout-session', { method: 'POST' });
-      //   if (!response.ok) throw new Error('Failed to create checkout session');
-      //   const { sessionId } = await response.json();
-      //   toast({ title: "Session Created", description: "Redirecting to Stripe..."});
-      const simulatedSessionId = `cs_test_${Date.now().toString(36)}`; // Dynamic placeholder
-      
-      console.info("SIMULATION: Backend call to create Stripe Checkout session would happen here.");
-      console.info(`SIMULATION: Received simulated Checkout Session ID: ${simulatedSessionId}`);
-      
       toast({
         title: "Redirecting to Payment...",
-        description: "You will be redirected to Stripe to complete your payment. (This is simulated)",
+        description: "You will be redirected to Stripe to complete your payment.",
       });
-      
-      // Simulate delay for redirection and payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000)); 
 
-      // Step 3: Simulate redirect to Stripe Checkout and successful return
-      // In a real app, Stripe.js handles the redirect:
-      //   const { error } = await stripe.redirectToCheckout({ sessionId });
-      //   if (error) {
-      //     toast({ variant: "destructive", title: "Stripe Error", description: error.message || "Redirection failed." });
-      //     setIsProcessingPayment(false);
-      //     return;
-      //   }
-      // If redirectToCheckout is successful, the user is navigated away.
-      // They return to a success_url or cancel_url you configure in Stripe & your backend.
-      // The actual upgradeToPaid() would ideally be triggered by a webhook from Stripe to your backend,
-      // which then updates the user's status in your database, and the frontend reflects this change.
-      
-      console.info("SIMULATION: User would be redirected to Stripe Checkout now.");
-      console.info("SIMULATION: Stripe processes payment and redirects back to your success_url.");
-      console.info("SIMULATION: Your success_url page/handler verifies payment and updates user status.");
+      // STEP 2: Redirect to Stripe Checkout
+      // ========================================================
+      // This will redirect the user to Stripe's hosted checkout page.
+      // Ensure `simulatedSessionId` is replaced with the actual session ID from your backend.
+      // ========================================================
+      const { error } = await stripe.redirectToCheckout({ sessionId: simulatedSessionId });
+      // ========================================================
 
-      // Step 4: Simulate successful payment confirmation & update context
-      upgradeToPaid(); // This updates the local state to reflect "Premium"
-      
-      toast({
-        variant: "default",
-        title: "Upgrade Successful! (Simulated)",
-        description: "You now have Premium access. Thank you!",
-        className: "bg-primary text-primary-foreground"
-      });
+      if (error) {
+        // This error is typically if `redirectToCheckout` itself fails (e.g., network issue,
+        // misconfiguration before even reaching Stripe, or an issue with the session ID format passed).
+        // If the session ID is invalid in a way Stripe can detect client-side, or if there's an issue
+        // with your Stripe account configuration related to Checkout, this might be caught.
+        console.error("Stripe redirectToCheckout error:", error);
+        toast({ 
+            variant: "destructive", 
+            title: "Redirection Error", 
+            description: error.message || "Could not redirect to Stripe. Please try again." 
+        });
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // IMPORTANT: If redirectToCheckout is successful, the user is navigated away from this page.
+      // Code here will likely not execute unless there was an immediate issue with the redirect call.
+      // The actual `upgradeToPaid()` and success messages should be handled on your
+      // success_url page, after Stripe confirms the payment and redirects the user back.
+      // Or, more robustly, via a Stripe webhook processed by your backend.
 
     } catch (error: any) {
-      console.error("Simulated Stripe Checkout Error:", error);
+      console.error("Stripe Checkout Process Error:", error);
       toast({
         variant: "destructive",
-        title: "Upgrade Failed (Simulated)",
-        description: error.message || "An unexpected error occurred during the simulated upgrade.",
+        title: "Payment Process Failed",
+        description: error.message || "An unexpected error occurred during the payment process.",
       });
-    } finally {
       setIsProcessingPayment(false);
     }
+    // `setIsProcessingPayment(false)` is primarily handled in error cases above,
+    // as a successful redirect means the user leaves this page.
   };
 
   return (
@@ -163,7 +163,7 @@ export function SubscriptionCard() {
                   className="mt-6 w-full sm:w-auto shadow-md hover:shadow-lg transition-shadow" 
                   size="lg"
                   onClick={() => setIsUpgradeDialogOpen(true)}
-                  disabled={isProcessingPayment || !STRIPE_PUBLIC_KEY} 
+                  disabled={isProcessingPayment || !STRIPE_PUBLIC_KEY || STRIPE_PUBLIC_KEY === "your_actual_stripe_publishable_key_here"} 
                 >
                   {isProcessingPayment ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -178,7 +178,7 @@ export function SubscriptionCard() {
                   <AlertDialogTitle>Confirm Premium Upgrade</AlertDialogTitle>
                   <AlertDialogDescription>
                     You will be redirected to Stripe to complete your payment securely.
-                    This is a real payment flow setup (frontend part).
+                    Ensure your backend is set up to create a Stripe Checkout Session.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -192,17 +192,12 @@ export function SubscriptionCard() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            {!STRIPE_PUBLIC_KEY && (
+            {(!STRIPE_PUBLIC_KEY || STRIPE_PUBLIC_KEY === "your_actual_stripe_publishable_key_here") && (
               <p className="text-xs text-destructive mt-2">
-                Stripe payments are not configured. Admin: Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env file.
+                Stripe payments are not configured correctly. Admin: Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env file.
               </p>
             )}
-            {STRIPE_PUBLIC_KEY && STRIPE_PUBLIC_KEY === "your_actual_stripe_publishable_key_here" && (
-               <p className="text-xs text-amber-600 mt-2">
-                Note: Using placeholder Stripe key. Update NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in .env for live testing.
-              </p>
-            )}
-            {STRIPE_PUBLIC_KEY && STRIPE_PUBLIC_KEY !== "your_actual_stripe_publishable_key_here" && (
+             {STRIPE_PUBLIC_KEY && STRIPE_PUBLIC_KEY !== "your_actual_stripe_publishable_key_here" && (
               <p className="text-xs text-muted-foreground mt-3">
                 Click "Upgrade to Premium" to proceed with a secure Stripe payment.
               </p>
@@ -214,8 +209,8 @@ export function SubscriptionCard() {
             <h4 className="font-semibold text-lg mb-2">Why Go Premium?</h4>
             <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                 <li><span className="font-medium text-foreground">Unlimited Analyses:</span> Never worry about quotas again.</li>
-                <li><span className="font-medium text-foreground">Priority Support:</span> Get faster help when you need it (simulated).</li>
-                <li><span className="font-medium text-foreground">Advanced Features:</span> Access to future premium-only tools (simulated).</li>
+                <li><span className="font-medium text-foreground">Priority Support:</span> Get faster help when you need it.</li>
+                <li><span className="font-medium text-foreground">Advanced Features:</span> Access to future premium-only tools.</li>
             </ul>
         </div>
       </CardContent>
