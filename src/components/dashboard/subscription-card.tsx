@@ -21,8 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 import { loadStripe } from "@stripe/stripe-js";
 
 const FREE_TIER_LIMIT = 3;
-// IMPORTANT: Replace this with your actual Stripe publishable key
-const STRIPE_PUBLIC_KEY_PLACEHOLDER = "pk_test_YOUR_STRIPE_PUBLIC_KEY_HERE"; 
+// IMPORTANT: This key will be loaded from an environment variable.
+const STRIPE_PUBLIC_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY; 
 
 export function SubscriptionCard() {
   const { isPaidUser, usageCount, upgradeToPaid } = useAuth();
@@ -34,6 +34,17 @@ export function SubscriptionCard() {
     setIsProcessingPayment(true);
     setIsUpgradeDialogOpen(false); // Close dialog
 
+    if (!STRIPE_PUBLIC_KEY) {
+      toast({
+        variant: "destructive",
+        title: "Configuration Error",
+        description: "Stripe public key is not configured. Please contact support.",
+      });
+      console.error("Stripe public key is not set in environment variables (NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY).");
+      setIsProcessingPayment(false);
+      return;
+    }
+
     toast({
       title: "Initializing Upgrade...",
       description: "Please wait while we prepare the secure checkout.",
@@ -41,7 +52,7 @@ export function SubscriptionCard() {
 
     try {
       // Step 1: Load Stripe.js
-      const stripe = await loadStripe(STRIPE_PUBLIC_KEY_PLACEHOLDER);
+      const stripe = await loadStripe(STRIPE_PUBLIC_KEY);
       if (!stripe) {
         toast({
           variant: "destructive",
@@ -150,7 +161,7 @@ export function SubscriptionCard() {
                   className="mt-6 w-full sm:w-auto shadow-md hover:shadow-lg transition-shadow" 
                   size="lg"
                   onClick={() => setIsUpgradeDialogOpen(true)}
-                  disabled={isProcessingPayment}
+                  disabled={isProcessingPayment || !STRIPE_PUBLIC_KEY} // Disable if key not set
                 >
                   {isProcessingPayment ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -179,10 +190,16 @@ export function SubscriptionCard() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-
-            <p className="text-xs text-muted-foreground mt-3">
-              Click "Upgrade to Premium" to proceed with a secure Stripe payment.
-            </p>
+            {!STRIPE_PUBLIC_KEY && (
+              <p className="text-xs text-destructive mt-2">
+                Stripe payments are not configured. Admin: Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.
+              </p>
+            )}
+            {STRIPE_PUBLIC_KEY && (
+              <p className="text-xs text-muted-foreground mt-3">
+                Click "Upgrade to Premium" to proceed with a secure Stripe payment.
+              </p>
+            )}
           </div>
         )}
         
@@ -198,3 +215,4 @@ export function SubscriptionCard() {
     </Card>
   );
 }
+
