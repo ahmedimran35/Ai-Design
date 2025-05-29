@@ -24,6 +24,8 @@ const FREE_TIER_LIMIT = 3;
 
 // The Stripe Publishable Key is loaded from an environment variable.
 // It should be set in your .env file as NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+// Ensure you have a .env file in your project root with:
+// NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your_actual_stripe_publishable_key_here"
 const STRIPE_PUBLIC_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY; 
 
 export function SubscriptionCard() {
@@ -40,7 +42,7 @@ export function SubscriptionCard() {
       toast({
         variant: "destructive",
         title: "Configuration Error",
-        description: "Stripe public key is not configured correctly. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env file.",
+        description: "Stripe public key is not configured correctly. Admin: Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env file and restart your development server.",
       });
       console.error("Stripe public key is not set or is using the placeholder in environment variables (NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY).");
       setIsProcessingPayment(false);
@@ -64,44 +66,50 @@ export function SubscriptionCard() {
         return;
       }
       
-      // STEP 1: Call your backend to create a Checkout Session
       // ========================================================
+      // STEP 1: Call your backend to create a Checkout Session
       // This is a SIMULATED backend call. In a real application, you would
       // fetch this from an endpoint on your server, e.g., /api/create-checkout-session
       // Your backend would use your Stripe SECRET KEY to create the session.
+      // IMPORTANT: You MUST replace this with a real API call to your backend.
       // ========================================================
+      toast({ title: "Fetching Checkout Session...", description: "Connecting to backend (simulated)..."});
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network latency
       const simulatedSessionId = `cs_test_FAKE_${Date.now().toString(36)}`; // IMPORTANT: This is a FAKE session ID
       // In a real app, replace `simulatedSessionId` with `sessionId` from your backend.
+      // Example:
       // const response = await fetch('/api/create-checkout-session', { method: 'POST' });
-      // if (!response.ok) throw new Error('Failed to create checkout session');
-      // const { sessionId } = await response.json();
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   throw new Error(errorData.error || 'Failed to create checkout session');
+      // }
+      // const { sessionId } = await response.json(); // Use 'sessionId' instead of 'simulatedSessionId'
       // toast({ title: "Checkout Session Created", description: "Redirecting to Stripe..."});
       // ========================================================
+
 
       toast({
         title: "Redirecting to Payment...",
         description: "You will be redirected to Stripe to complete your payment.",
       });
 
-      // STEP 2: Redirect to Stripe Checkout
       // ========================================================
-      // This will redirect the user to Stripe's hosted checkout page.
+      // STEP 2: Redirect to Stripe Checkout
       // Ensure `simulatedSessionId` is replaced with the actual session ID from your backend.
       // ========================================================
       const { error } = await stripe.redirectToCheckout({ sessionId: simulatedSessionId });
       // ========================================================
 
       if (error) {
-        // This error is typically if `redirectToCheckout` itself fails (e.g., network issue,
-        // misconfiguration before even reaching Stripe, or an issue with the session ID format passed).
-        // If the session ID is invalid in a way Stripe can detect client-side, or if there's an issue
-        // with your Stripe account configuration related to Checkout, this might be caught.
         console.error("Stripe redirectToCheckout error:", error);
+        let description = error.message || "Could not redirect to Stripe. Please try again.";
+        if (error.message && error.message.includes("Failed to set a named property 'href' on 'Location'")) {
+            description = "Could not redirect to Stripe, possibly due to running in a sandboxed iframe (common in development previews). Please test in a standalone browser window or after deployment. Also, ensure a real Stripe Session ID from your backend is being used.";
+        }
         toast({ 
             variant: "destructive", 
             title: "Redirection Error", 
-            description: error.message || "Could not redirect to Stripe. Please try again." 
+            description: description 
         });
         setIsProcessingPayment(false);
         return;
@@ -110,7 +118,8 @@ export function SubscriptionCard() {
       // IMPORTANT: If redirectToCheckout is successful, the user is navigated away from this page.
       // Code here will likely not execute unless there was an immediate issue with the redirect call.
       // The actual `upgradeToPaid()` and success messages should be handled on your
-      // success_url page, after Stripe confirms the payment and redirects the user back.
+      // success_url page (configured in your Stripe Checkout Session on the backend),
+      // after Stripe confirms the payment and redirects the user back.
       // Or, more robustly, via a Stripe webhook processed by your backend.
 
     } catch (error: any) {
@@ -178,7 +187,7 @@ export function SubscriptionCard() {
                   <AlertDialogTitle>Confirm Premium Upgrade</AlertDialogTitle>
                   <AlertDialogDescription>
                     You will be redirected to Stripe to complete your payment securely.
-                    Ensure your backend is set up to create a Stripe Checkout Session.
+                    Ensure your backend is set up to create a Stripe Checkout Session and provide its ID.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -217,3 +226,5 @@ export function SubscriptionCard() {
     </Card>
   );
 }
+
+    
