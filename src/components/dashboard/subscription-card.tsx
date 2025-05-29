@@ -1,21 +1,32 @@
 
 "use client";
 
+import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { CheckCircle, Star, Zap } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const FREE_TIER_LIMIT = 3;
 
 export function SubscriptionCard() {
   const { isPaidUser, usageCount, upgradeToPaid } = useAuth();
+  const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = React.useState(false);
 
-  const handleUpgrade = () => {
-    // In a real app, this would redirect to Stripe Checkout or a payment page.
-    // For this simulation, we directly call upgradeToPaid.
+  const handleSimulatedUpgrade = () => {
     upgradeToPaid();
-    // Optionally, show a toast message for successful upgrade
+    setIsUpgradeDialogOpen(false); // Close dialog after upgrade
   };
 
   return (
@@ -48,12 +59,37 @@ export function SubscriptionCard() {
               </span>{" "}
               free analyses remaining.
             </p>
-            <Button onClick={handleUpgrade} className="mt-6 w-full sm:w-auto shadow-md hover:shadow-lg transition-shadow" size="lg">
-              <Zap className="mr-2 h-5 w-5" />
-              Upgrade to Premium
-            </Button>
+
+            <AlertDialog open={isUpgradeDialogOpen} onOpenChange={setIsUpgradeDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  className="mt-6 w-full sm:w-auto shadow-md hover:shadow-lg transition-shadow" 
+                  size="lg"
+                  onClick={() => setIsUpgradeDialogOpen(true)}
+                >
+                  <Zap className="mr-2 h-5 w-5" />
+                  Upgrade to Premium
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Simulate Premium Upgrade</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This is a simulated upgrade for demonstration purposes. No real payment will be processed.
+                    Do you want to activate Premium features for this session?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={() => setIsUpgradeDialogOpen(false)}>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleSimulatedUpgrade}>
+                    Yes, Upgrade
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <p className="text-xs text-muted-foreground mt-3">
-              (Note: This is a simulated upgrade for demonstration purposes. No real payment will be processed.)
+              Click "Upgrade to Premium" to simulate activating paid features.
             </p>
           </div>
         )}
