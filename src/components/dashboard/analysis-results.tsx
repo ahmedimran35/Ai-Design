@@ -23,7 +23,7 @@ const getIconForArea = (area: string) => {
   const lowerArea = area.toLowerCase();
   if (lowerArea.includes("color") || lowerArea.includes("palette")) return <Palette className="h-5 w-5 text-accent" />;
   if (lowerArea.includes("align") || lowerArea.includes("layout")) return <AlignHorizontalDistributeCenter className="h-5 w-5 text-primary" />;
-  if (lowerArea.includes("readab") || lowerArea.includes("typograph") || lowerArea.includes("text")) return <Eye className="h-5 w-5 text-accent" />;
+  if (lowerArea.includes("readab") || lowerArea.includes("typograph") || lowerArea.includes("text") || lowerArea.includes("accessib")) return <Eye className="h-5 w-5 text-accent" />;
   if (lowerArea.includes("hierarch") || lowerArea.includes("visual")) return <Lightbulb className="h-5 w-5 text-primary" />;
   return <Lightbulb className="h-5 w-5 text-muted-foreground" />;
 };
@@ -95,7 +95,7 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
             {results.flaws.length > 0 && (
               <AccordionItem value="flaws">
                 <AccordionTrigger className="hover:no-underline">
-                  <div className="flex flex-1 items-center gap-2 text-xl font-semibold">
+                  <div className="flex flex-1 items-center gap-2 text-lg font-semibold">
                     <AlertTriangle className="h-6 w-6 text-destructive" />
                     Identified Flaws ({results.flaws.length})
                   </div>
@@ -104,9 +104,9 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
                   <div className="space-y-3 pt-4">
                     {results.flaws.map((flaw, index) => (
                       <Alert variant="destructive" key={`flaw-${index}`}>
-                        <AlertTriangle className="h-4 w-4" /> {/* Icon will be text-destructive due to variant */}
-                        <AlertTitle className="text-destructive">Flaw #{index + 1}</AlertTitle> {/* Explicitly destructive, or inherits */}
-                        <AlertDescription className="text-foreground"> {/* Override to main text color */}
+                        <AlertTriangle className="h-4 w-4" /> 
+                        <AlertTitle className="text-destructive">Flaw #{index + 1}</AlertTitle>
+                        <AlertDescription className="text-foreground"> 
                           {flaw}
                         </AlertDescription>
                       </Alert>
@@ -119,29 +119,29 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
             {results.improvements.length > 0 && (
               <AccordionItem value="improvements">
                 <AccordionTrigger className="hover:no-underline">
-                   <div className="flex flex-1 items-center gap-2 text-xl font-semibold text-primary">
+                   <div className="flex flex-1 items-center gap-2 text-lg font-semibold text-primary">
                     <Lightbulb className="h-6 w-6" />
                     Improvement Suggestions ({results.improvements.length})
                   </div>
                 </AccordionTrigger>
-                <AccordionContent>
-                  <div className="pt-4">
-                    <Accordion type="single" collapsible className="w-full">
-                      {results.improvements.map((item, index) => (
-                        <AccordionItem value={`improvement-item-${index}`} key={`improvement-${index}`} className="border-b border-border/70 last:border-b-0">
-                          <AccordionTrigger className="text-left hover:no-underline py-4 text-base">
-                            <div className="flex items-center gap-3">
-                              {getIconForArea(item.area)}
-                              <span className="font-medium">{item.area}: {item.suggestion.substring(0, 70)}{item.suggestion.length > 70 ? "..." : ""}</span>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent className="space-y-2 pt-2 pb-4 px-2 bg-primary/5 rounded-b-md">
-                            <p><strong>Suggestion:</strong> {item.suggestion}</p>
-                            <p className="text-sm text-muted-foreground"><strong>Reasoning:</strong> {item.reasoning}</p>
-                          </AccordionContent>
-                        </AccordionItem>
-                      ))}
-                    </Accordion>
+                <AccordionContent className="pt-4">
+                  <div className="space-y-4">
+                    {results.improvements.map((item, index) => (
+                      <div key={`improvement-${index}`} className="p-4 border border-border/70 rounded-lg shadow-sm bg-card space-y-3">
+                        <div className="flex items-center gap-2">
+                          {getIconForArea(item.area)}
+                          <h4 className="font-semibold text-base text-primary">{item.area}</h4>
+                        </div>
+                        <div>
+                            <p className="text-sm font-semibold text-foreground">Suggestion:</p>
+                            <p className="text-sm text-foreground/90">{item.suggestion}</p>
+                        </div>
+                        <div>
+                            <p className="text-xs font-semibold text-muted-foreground">Reasoning:</p>
+                            <p className="text-xs text-muted-foreground/90">{item.reasoning}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -152,3 +152,4 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
     </Card>
   );
 }
+
