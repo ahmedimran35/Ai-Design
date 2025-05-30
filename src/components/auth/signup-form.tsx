@@ -32,7 +32,7 @@ const signupFormSchema = z.object({
 type SignupFormValues = z.infer<typeof signupFormSchema>;
 
 export function SignupForm() {
-  const { login } // Using login to simulate signup then login
+  const { login } 
    = useAuth();
   const router = useRouter();
   const { toast } = useToast();
@@ -50,15 +50,13 @@ export function SignupForm() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // In a real app, you would call your registration service here.
-    // For demo purposes, we use the mock login from AuthContext after "signing up".
     login(data.email, data.password); 
 
     toast({
       title: "Account Created!",
       description: "Welcome to Design Alchemist!",
     });
-    router.push("/dashboard");
+    router.push("/"); // Redirect to landing page
   }
 
   return (

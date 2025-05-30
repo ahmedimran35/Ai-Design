@@ -44,15 +44,13 @@ export function LoginForm() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // In a real app, you would call your authentication service here.
-    // For demo purposes, we use the mock login from AuthContext.
     login(data.email, data.password);
     
     toast({
       title: "Login Successful!",
       description: "Welcome back!",
     });
-    router.push("/dashboard");
+    router.push("/"); // Redirect to landing page
   }
 
   return (
