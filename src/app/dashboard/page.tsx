@@ -22,26 +22,17 @@ export default function DashboardPage() {
   const [isLoadingAnalysis, setIsLoadingAnalysis] = useState<boolean>(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, authLoading } = useAuth(); // Use authLoading
   const router = useRouter();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const imageUploadFormRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const checkAuth = () => {
-      const storedAuth = typeof window !== "undefined" ? localStorage.getItem("isAuthenticated") : null;
-      if (storedAuth !== "true") {
-        router.replace("/login?message=unauthorized");
-      } else {
-        setIsCheckingAuth(false);
-      }
-    };
-    
-    if (typeof window !== "undefined") {
-        checkAuth();
+    // Redirect if not authenticated once Firebase auth state is determined
+    if (!authLoading && !isAuthenticated) {
+      router.replace("/login?message=unauthorized");
     }
-  }, [router]);
+  }, [isAuthenticated, authLoading, router]);
 
   const handleAnalysisStart = () => {
     setIsLoadingAnalysis(true);
@@ -67,7 +58,7 @@ export default function DashboardPage() {
     imageUploadFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  if (isCheckingAuth) {
+  if (authLoading) { // Show loader while Firebase auth is initializing
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] text-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
@@ -76,7 +67,7 @@ export default function DashboardPage() {
     );
   }
   
-  if (!isAuthenticated) {
+  if (!isAuthenticated) { // If auth is loaded and still not authenticated
     return (
          <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] text-center">
             <ShieldAlert className="h-16 w-16 text-destructive mb-4" />
@@ -86,6 +77,7 @@ export default function DashboardPage() {
     );
   }
 
+  // User is authenticated and auth state is loaded
   return (
     <div className="space-y-8">
       <Card className="bg-gradient-to-br from-primary/5 via-background to-accent/5 border-none shadow-none">
@@ -97,7 +89,7 @@ export default function DashboardPage() {
         </CardHeader>
       </Card>
 
-      <div ref={imageUploadFormRef} className="scroll-mt-20"> {/* Added scroll-mt for better positioning after scroll */}
+      <div ref={imageUploadFormRef} className="scroll-mt-20">
         <ImageUploadForm
           onAnalysisStart={handleAnalysisStart}
           onAnalysisComplete={handleAnalysisComplete}

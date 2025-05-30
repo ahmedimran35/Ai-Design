@@ -19,6 +19,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { LogIn } from "lucide-react";
+import { AuthError } from "firebase/auth";
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -41,16 +42,42 @@ export function LoginForm() {
   });
 
   async function onSubmit(data: LoginFormValues) {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    login(data.email, data.password);
-    
-    toast({
-      title: "Login Successful!",
-      description: "Welcome back!",
-    });
-    router.push("/"); // Redirect to landing page
+    try {
+      await login(data.email, data.password);
+      toast({
+        title: "Login Successful!",
+        description: "Welcome back!",
+      });
+      router.push("/"); // Redirect to landing page after login
+    } catch (error: any) {
+      let errorMessage = "An unknown error occurred during login.";
+      if (error instanceof AuthError) { // Check if it's a Firebase AuthError
+        switch (error.code) {
+          case "auth/user-not-found":
+          case "auth/wrong-password":
+          case "auth/invalid-credential":
+            errorMessage = "Invalid email or password. Please try again.";
+            break;
+          case "auth/invalid-email":
+            errorMessage = "The email address is not valid.";
+            break;
+          case "auth/user-disabled":
+            errorMessage = "This user account has been disabled.";
+            break;
+          default:
+            errorMessage = "Login failed. Please try again.";
+            break;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: errorMessage,
+      });
+      console.error("Login form error:", error);
+    }
   }
 
   return (

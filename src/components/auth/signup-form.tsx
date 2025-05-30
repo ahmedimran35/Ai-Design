@@ -19,6 +19,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlus } from "lucide-react";
+import { AuthError } from "firebase/auth";
 
 const signupFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -32,8 +33,7 @@ const signupFormSchema = z.object({
 type SignupFormValues = z.infer<typeof signupFormSchema>;
 
 export function SignupForm() {
-  const { login } 
-   = useAuth();
+  const { signup } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -47,16 +47,40 @@ export function SignupForm() {
   });
 
   async function onSubmit(data: SignupFormValues) {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    login(data.email, data.password); 
-
-    toast({
-      title: "Account Created!",
-      description: "Welcome to Design Alchemist!",
-    });
-    router.push("/"); // Redirect to landing page
+    try {
+      await signup(data.email, data.password);
+      toast({
+        title: "Account Created!",
+        description: "Welcome to Design Alchemist!",
+      });
+      router.push("/"); // Redirect to landing page after signup
+    } catch (error: any) {
+      let errorMessage = "An unknown error occurred during signup.";
+      if (error instanceof AuthError) { // Check if it's a Firebase AuthError
+        switch (error.code) {
+          case "auth/email-already-in-use":
+            errorMessage = "This email address is already in use by another account.";
+            break;
+          case "auth/invalid-email":
+            errorMessage = "The email address is not valid.";
+            break;
+          case "auth/weak-password":
+            errorMessage = "The password is too weak. Please choose a stronger password.";
+            break;
+          default:
+            errorMessage = "Signup failed. Please try again.";
+            break;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      toast({
+        variant: "destructive",
+        title: "Signup Failed",
+        description: errorMessage,
+      });
+      console.error("Signup form error:", error);
+    }
   }
 
   return (

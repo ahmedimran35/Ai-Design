@@ -1,66 +1,95 @@
 
 "use client";
 
-import type { User } from "firebase/auth";
+import type { User as FirebaseUser } from "firebase/auth";
+import { 
+  onAuthStateChanged, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut as firebaseSignOut 
+} from "firebase/auth";
+import { auth } from "@/lib/firebase/config"; // Import Firebase auth instance
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  setIsAuthenticated: Dispatch<SetStateAction<boolean>>;
-  user: User | null;
-  setUser: Dispatch<SetStateAction<User | null>>;
-  login: (email?: string, password?: string) => void;
-  logout: () => void;
+  user: FirebaseUser | null;
+  authLoading: boolean; // To indicate if Firebase is checking auth state
+  login: (email?: string, password?: string) => Promise<FirebaseUser | null>;
+  signup: (email?: string, password?: string) => Promise<FirebaseUser | null>;
+  logout: () => Promise<void>;
+  // setUser and setIsAuthenticated are now managed internally by onAuthStateChanged
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true); // Start as true
 
-  const login = (email?: string, password?: string) => {
-    setIsAuthenticated(true);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("isAuthenticated", "true");
-      if (email) {
-        localStorage.setItem("userEmail", email);
-        setUser({ email } as User); // Simulate user object for context
-      }
-    }
-  };
-
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("isAuthenticated");
-      localStorage.removeItem("userEmail");
-    }
-  };
-  
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedAuth = localStorage.getItem("isAuthenticated");
-      const storedEmail = localStorage.getItem("userEmail");
-      if (storedAuth === "true") {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
         setIsAuthenticated(true);
-        if (storedEmail) {
-            setUser({ email: storedEmail } as User); // Simulate user object
-        }
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
       }
-    }
+      setAuthLoading(false); // Firebase has determined auth state
+    });
+
+    return () => unsubscribe(); // Cleanup subscription on unmount
   }, []);
+
+  const login = async (email?: string, password?: string): Promise<FirebaseUser | null> => {
+    if (!email || !password) {
+      throw new Error("Email and password are required for login.");
+    }
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // onAuthStateChanged will handle setting user and isAuthenticated
+      return userCredential.user;
+    } catch (error) {
+      console.error("Firebase login error:", error);
+      throw error; // Re-throw for the form to handle
+    }
+  };
+
+  const signup = async (email?: string, password?: string): Promise<FirebaseUser | null> => {
+    if (!email || !password) {
+      throw new Error("Email and password are required for signup.");
+    }
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // onAuthStateChanged will handle setting user and isAuthenticated
+      return userCredential.user;
+    } catch (error) {
+      console.error("Firebase signup error:", error);
+      throw error; // Re-throw for the form to handle
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await firebaseSignOut(auth);
+      // onAuthStateChanged will handle setting user to null and isAuthenticated to false
+    } catch (error) {
+      console.error("Firebase logout error:", error);
+      throw error;
+    }
+  };
 
   return (
     <AuthContext.Provider 
       value={{ 
         isAuthenticated, 
-        setIsAuthenticated, 
         user, 
-        setUser, 
+        authLoading,
         login, 
+        signup,
         logout,
       }}
     >

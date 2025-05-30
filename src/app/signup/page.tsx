@@ -1,39 +1,24 @@
 
 "use client";
 
+import React, { useEffect } from "react"; // Ensure React is imported for useState
 import { SignupForm } from "@/components/auth/signup-form";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 export default function SignupPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, authLoading } = useAuth(); // Use authLoading from context
   const router = useRouter();
-  const [isLoading, setIsLoading] = React.useState(true);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-        const storedAuth = localStorage.getItem("isAuthenticated");
-        if (storedAuth === "true") {
-            router.replace("/dashboard");
-        } else {
-            setIsLoading(false);
-        }
+    if (!authLoading && isAuthenticated) {
+      router.replace("/dashboard"); // Redirect to dashboard if authenticated and auth is loaded
     }
-  }, [router]);
+  }, [isAuthenticated, authLoading, router]);
 
-  // Fallback check based on context
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.replace("/dashboard");
-    } else {
-      setIsLoading(false);
-    }
-  }, [isAuthenticated, router]);
-
-  if (isLoading) {
+  if (authLoading) { // Show loader while Firebase is determining auth state
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -41,15 +26,26 @@ export default function SignupPage() {
     );
   }
 
+  // If auth is loaded and user is not authenticated, show signup form
+  if (!isAuthenticated) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] py-12">
+        <SignupForm />
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <Link href="/login" className="font-medium text-primary hover:underline">
+            Login
+          </Link>
+        </p>
+      </div>
+    );
+  }
+
+  // Fallback, e.g. if redirecting
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] py-12">
-      <SignupForm />
-      <p className="mt-6 text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
-        <Link href="/login" className="font-medium text-primary hover:underline">
-          Login
-        </Link>
-      </p>
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
+      <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      <p>Redirecting...</p>
     </div>
   );
 }
