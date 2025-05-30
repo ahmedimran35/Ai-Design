@@ -36,12 +36,12 @@ export default function HomePage() {
             {/* Image Column */}
             <div className="relative w-full max-w-xl mx-auto lg:mx-0 rounded-lg overflow-hidden shadow-2xl group">
               <Image
-                src="https://placehold.co/640x360.png"
-                alt="AI-powered design analysis in action"
-                width={640}
-                height={360}
+                src="https://placehold.co/800x600.png"
+                alt="AI enhancing digital design"
+                width={800}
+                height={600}
                 priority
-                data-ai-hint="futuristic design interface"
+                data-ai-hint="AI design tool"
                 className="w-full h-auto block"
               />
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/20 opacity-80 group-hover:opacity-50 transition-opacity duration-500"></div>
