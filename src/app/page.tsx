@@ -25,11 +25,12 @@ export default function HomePage() {
           </Button>
         </div>
         <div className="mt-12 relative w-full max-w-2xl mx-auto aspect-video rounded-lg overflow-hidden shadow-2xl">
-           <Image 
-            src="https://placehold.co/1200x675.png" 
-            alt="Abstract design representation" 
+           <Image
+            src="https://placehold.co/1200x675.png"
+            alt="Abstract design representation"
             layout="fill"
             objectFit="cover"
+            priority
             data-ai-hint="abstract design"
             className="bg-muted"
           />
