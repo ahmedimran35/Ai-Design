@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { UploadCloud, SearchCode, Lightbulb, Palette, AlignHorizontalDistributeCenter, Eye, Wand2, CheckCircle, Star, Sparkles, Zap, Users, Layers } from "lucide-react"; // Added Layers
+import { UploadCloud, SearchCode, Lightbulb, Palette, AlignHorizontalDistributeCenter, Eye, Wand2, CheckCircle, Star, Sparkles, Zap, Users, Layers, Brain } from "lucide-react"; // Added Brain
 import Link from "next/link";
 import Image from "next/image";
 
@@ -33,23 +33,26 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Image Column */}
-            <div className="relative w-full max-w-xl mx-auto lg:mx-0 rounded-lg overflow-hidden shadow-2xl group">
-              <Image
-                src="https://placehold.co/800x600.png"
-                alt="AI enhancing digital design"
-                width={800}
-                height={600}
-                priority
-                data-ai-hint="AI design tool"
-                className="w-full h-auto block"
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/20 opacity-80 group-hover:opacity-50 transition-opacity duration-500"></div>
-              <div className="absolute top-4 left-4 p-2 bg-background/70 backdrop-blur-sm rounded-md shadow">
-                <Sparkles className="h-5 w-5 text-primary" />
+            {/* Insight Text Column */}
+            <div className="relative w-full max-w-xl mx-auto lg:mx-0 p-6 md:p-8 bg-card/80 backdrop-blur-sm rounded-lg shadow-xl border border-border/30 group">
+              <div className="flex items-center mb-4">
+                <Brain className="h-10 w-10 text-primary mr-3 group-hover:animate-pulse" />
+                <h2 className="text-2xl font-semibold text-primary">The Alchemist's Secret</h2>
               </div>
-              <div className="absolute bottom-4 right-4 p-2 bg-background/70 backdrop-blur-sm rounded-md shadow">
-                <Layers className="h-5 w-5 text-accent" />
+              <p className="text-base text-foreground/90 mb-4">
+                Design Alchemist isn't just another feedback tool. It's your intelligent design partner, powered by cutting-edge generative AI. We delve deep into the core principles of design, analyzing:
+              </p>
+              <ul className="space-y-2 text-foreground/80 list-disc list-inside mb-6">
+                <li><span className="font-medium text-accent/90">Clarity & Usability:</span> Ensuring your message is clear and interactions are intuitive.</li>
+                <li><span className="font-medium text-accent/90">Aesthetic Harmony:</span> Checking for balance in color, typography, and layout.</li>
+                <li><span className="font-medium text-accent/90">Accessibility Standards:</span> Helping you create designs that work for everyone.</li>
+                <li><span className="font-medium text-accent/90">Consistency & Polish:</span> Identifying areas to refine for a professional finish.</li>
+              </ul>
+              <p className="text-base text-foreground/90">
+                Our AI doesn't just point out flaws; it provides actionable, context-aware suggestions, empowering you to truly transform your creative visions into impactful realities.
+              </p>
+              <div className="absolute -top-3 -right-3 p-2 bg-accent/80 backdrop-blur-sm rounded-full shadow animate-ping group-hover:animate-none">
+                <Sparkles className="h-5 w-5 text-white" />
               </div>
             </div>
           </div>
