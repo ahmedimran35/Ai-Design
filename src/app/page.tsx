@@ -48,9 +48,7 @@ export default function HomePage() {
                 <li><span className="font-medium text-accent/90">Accessibility Standards:</span> Helping you create designs that work for everyone.</li>
                 <li><span className="font-medium text-accent/90">Consistency & Polish:</span> Identifying areas to refine for a professional finish.</li>
               </ul>
-              <p className="text-base text-foreground/90">
-                Our AI doesn't just point out flaws; it provides actionable, context-aware suggestions, empowering you to truly transform your creative visions into impactful realities.
-              </p>
+              
               <div className="absolute -top-3 -right-3 p-2 bg-accent/80 backdrop-blur-sm rounded-full shadow animate-ping group-hover:animate-none">
                 <Sparkles className="h-5 w-5 text-white" />
               </div>
@@ -151,4 +149,3 @@ export default function HomePage() {
     </div>
   );
 }
-
