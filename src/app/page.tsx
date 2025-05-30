@@ -34,15 +34,15 @@ export default function HomePage() {
             </div>
 
             {/* Image Column */}
-            <div className="relative aspect-video w-full max-w-xl mx-auto lg:mx-0 rounded-lg overflow-hidden shadow-2xl group border-2 border-accent/30">
+            <div className="relative w-full max-w-xl mx-auto lg:mx-0 rounded-lg overflow-hidden shadow-2xl group">
               <Image
-                src="https://placehold.co/1200x675.png"
+                src="https://placehold.co/640x360.png" 
                 alt="AI-powered design analysis in action"
-                layout="fill"
-                objectFit="cover"
+                width={640}
+                height={360}
                 priority
                 data-ai-hint="futuristic design interface"
-                // className removed for debugging visibility
+                className="w-full h-auto block" 
               />
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/20 opacity-80 group-hover:opacity-50 transition-opacity duration-500"></div>
               <div className="absolute top-4 left-4 p-2 bg-background/70 backdrop-blur-sm rounded-md shadow">
