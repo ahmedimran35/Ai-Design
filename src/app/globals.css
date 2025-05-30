@@ -91,3 +91,19 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .animate-text-gradient {
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: text-gradient 4s linear infinite;
+  }
+
+  @keyframes text-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+}

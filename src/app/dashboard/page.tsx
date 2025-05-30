@@ -3,13 +3,25 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { ImageUploadForm } from "@/components/dashboard/image-upload-form";
-import { AnalysisResults } from "@/components/dashboard/analysis-results";
+// import { AnalysisResults } from "@/components/dashboard/analysis-results"; // To be dynamically imported
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, ShieldAlert, RefreshCcw } from "lucide-react";
 import type { SuggestDesignImprovementsOutput } from "@/ai/flows/suggest-design-improvements";
+import dynamic from "next/dynamic";
+
+const AnalysisResults = dynamic(() => import("@/components/dashboard/analysis-results").then(mod => mod.AnalysisResults), {
+  loading: () => (
+      <div className="flex flex-col items-center justify-center min-h-[200px] text-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+        <p className="text-muted-foreground">Loading Results Component...</p>
+      </div>
+  ),
+  ssr: false, // AnalysisResults likely uses client-side hooks/state
+});
+
 
 interface DesignAnalysisResult {
   flaws: string[];
