@@ -4,7 +4,6 @@
 import React, { useState, useEffect } from "react";
 import { ImageUploadForm } from "@/components/dashboard/image-upload-form";
 import { AnalysisResults } from "@/components/dashboard/analysis-results";
-import { SubscriptionCard } from "@/components/dashboard/subscription-card";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +21,7 @@ export default function DashboardPage() {
   const [isLoadingAnalysis, setIsLoadingAnalysis] = useState<boolean>(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   
-  const { isAuthenticated, user } = useAuth(); // Added user here for potential display
+  const { isAuthenticated, user } = useAuth();
   const router = useRouter();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
@@ -88,8 +87,6 @@ export default function DashboardPage() {
           </CardDescription>
         </CardHeader>
       </Card>
-
-      <SubscriptionCard />
 
       <ImageUploadForm
         onAnalysisStart={handleAnalysisStart}
