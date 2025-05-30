@@ -75,30 +75,21 @@ export function SubscriptionCard() {
       // ========================================================
       toast({ title: "Fetching Checkout Session...", description: "Connecting to backend (simulated)..."});
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network latency
-      const simulatedSessionId = `cs_test_FAKE_${Date.now().toString(36)}`; // IMPORTANT: This is a FAKE session ID for frontend testing only.
-      // In a real app, replace `simulatedSessionId` with `sessionId` from your backend.
+      
+      // IMPORTANT: This `simulatedSessionId` MUST be replaced by fetching a real session ID 
+      // from your backend API endpoint.
+      const sessionIdToUse = `cs_test_FAKE_${Date.now().toString(36)}`; 
       // Example:
       // const response = await fetch('/api/create-checkout-session', { method: 'POST' });
       // if (!response.ok) {
       //   const errorData = await response.json();
       //   throw new Error(errorData.error || 'Failed to create checkout session');
       // }
-      // const { sessionId } = await response.json(); // Use 'sessionId' instead of 'simulatedSessionId'
+      // const { sessionId } = await response.json(); // Use 'sessionId' from your backend
+      // const sessionIdToUse = sessionId;
       // toast({ title: "Checkout Session Created", description: "Redirecting to Stripe..."});
       // ========================================================
 
-      // CRITICAL CHECK: Ensure a real session ID is used before redirecting.
-      if (simulatedSessionId.includes("FAKE_")) {
-        console.error("CRITICAL: Attempting to redirect to Stripe with a FAKE session ID. You MUST implement a backend to generate a real Stripe Checkout Session ID.");
-        toast({
-          variant: "destructive",
-          title: "Backend Implementation Required",
-          description: "A real Stripe Checkout Session ID from your backend is needed. This is currently a FAKE ID for testing. Please implement your backend API to create a session.",
-          duration: 10000, // Keep this message longer
-        });
-        setIsProcessingPayment(false);
-        return; // Stop before attempting redirect with a fake ID
-      }
 
       toast({
         title: "Redirecting to Payment...",
@@ -107,9 +98,9 @@ export function SubscriptionCard() {
 
       // ========================================================
       // STEP 2: Redirect to Stripe Checkout
-      // Ensure `simulatedSessionId` is replaced with the actual session ID from your backend.
+      // Ensure `sessionIdToUse` is the actual session ID from your backend.
       // ========================================================
-      const { error } = await stripe.redirectToCheckout({ sessionId: simulatedSessionId });
+      const { error } = await stripe.redirectToCheckout({ sessionId: sessionIdToUse });
       // ========================================================
 
       if (error) {
