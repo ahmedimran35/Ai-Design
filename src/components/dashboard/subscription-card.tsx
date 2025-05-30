@@ -27,7 +27,6 @@ const FREE_TIER_LIMIT = 3;
 // It should be set in your .env file as NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 // Ensure you have a .env file in your project root with:
 // NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your_actual_stripe_publishable_key_here"
-// This variable is accessed in the `handleStripeCheckout` function.
 const STRIPE_PUBLIC_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY; 
 
 export function SubscriptionCard() {
@@ -70,32 +69,66 @@ export function SubscriptionCard() {
       
       // ==========================================================================================
       // CRITICAL STEP: Fetch a REAL Stripe Checkout Session ID from YOUR BACKEND
-      // The line below is a PLACEHOLDER. You MUST replace this with an API call
-      // to your server, which uses your Stripe SECRET KEY to create a Checkout Session.
-      // Example:
-      //   const response = await fetch('/api/create-checkout-session', { method: 'POST' });
-      //   if (!response.ok) {
-      //     const errorData = await response.json();
-      //     throw new Error(errorData.error || 'Failed to create checkout session on backend');
+      // You MUST implement an API call to your server here.
+      // Your server will use your Stripe SECRET KEY to create a Checkout Session.
+      // The server should then return the `sessionId` from that session.
+      //
+      // Example of fetching the session ID:
+      //
+      //   let sessionIdFromBackend: string | null = null;
+      //   try {
+      //     const response = await fetch('/api/create-checkout-session', { // Replace with your actual backend endpoint
+      //       method: 'POST',
+      //       headers: { 'Content-Type': 'application/json' },
+      //       // body: JSON.stringify({ items: [{ id: 'your-price-id' }] }), // Send necessary data to your backend
+      //     });
+      //
+      //     if (!response.ok) {
+      //       const errorData = await response.json();
+      //       throw new Error(errorData.message || 'Failed to create checkout session on backend');
+      //     }
+      //     const session = await response.json();
+      //     sessionIdFromBackend = session.id; // Assuming your backend returns { id: 'cs_...' }
+      //   } catch (backendError: any) {
+      //     console.error("Error fetching session ID from backend:", backendError);
+      //     toast({
+      //       variant: "destructive",
+      //       title: "Backend Communication Error",
+      //       description: backendError.message || "Could not get a payment session from the server. Please try again.",
+      //       duration: 10000,
+      //     });
+      //     setIsProcessingPayment(false);
+      //     return;
       //   }
-      //   const { sessionId } = await response.json(); // Use 'sessionId' from your backend
-      //   const sessionIdToUse = sessionId; 
+      //
+      //   const sessionIdToUse = sessionIdFromBackend;
+      //
+      // FOR NOW, sessionIdToUse is null. YOU MUST IMPLEMENT THE FETCH ABOVE.
       // ==========================================================================================
+      let sessionIdToUse: string | null = null; 
       
-      // For demonstration, this remains a placeholder. REPLACE IT!
-      toast({ title: "Fetching Checkout Session from Backend (Simulated)...", description: "Ensure this is replaced with a real backend call."});
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network latency for backend call
-      const sessionIdToUse: string | null = `cs_test_MUST_BE_REPLACED_BY_REAL_BACKEND_ID_${Date.now().toString(36)}`;
-      // ==========================================================================================
+      // DEVELOPER: Replace the line above and the comment block with your actual fetch logic
+      // to get `sessionIdToUse` from your backend.
+      // For example:
+      // const backendResponse = await fetch('/api/your-backend-checkout-session-endpoint', { method: 'POST' });
+      // if (!backendResponse.ok) throw new Error('Failed to get session from backend');
+      // const sessionData = await backendResponse.json();
+      // sessionIdToUse = sessionData.sessionId;
 
 
-      // Check if the session ID is still the placeholder or empty
-      if (!sessionIdToUse || sessionIdToUse.includes("MUST_BE_REPLACED_BY_REAL_BACKEND_ID")) {
-        console.error("CRITICAL ERROR: A valid Stripe Checkout Session ID was not provided by the backend. Value received:", sessionIdToUse);
+      // If you are still developing the backend, you can temporarily assign a TEST ID
+      // known to be valid from your Stripe dashboard to test the redirect itself,
+      // BUT REMOVE IT before committing or deploying.
+      // sessionIdToUse = "cs_test_A_VALID_TEST_SESSION_ID_FROM_YOUR_STRIPE_DASHBOARD";
+
+
+      // Check if the session ID was successfully fetched
+      if (!sessionIdToUse) {
+        console.error("CRITICAL ERROR: A valid Stripe Checkout Session ID was not fetched or provided from the backend. `sessionIdToUse` is null or undefined.");
         toast({
           variant: "destructive",
-          title: "Backend Error: Invalid Session ID",
-          description: "The application did not receive a valid Checkout Session ID from the backend. Please ensure your backend is correctly creating and returning a Stripe session ID.",
+          title: "Backend Error: Missing Session ID",
+          description: "Failed to fetch a Checkout Session ID from the backend. Please ensure your backend API call is implemented and successfully returns a session ID.",
           duration: 10000, 
         });
         setIsProcessingPayment(false);
@@ -129,11 +162,11 @@ export function SubscriptionCard() {
       }
 
       // If redirectToCheckout is successful, the user is navigated away from this page.
-      // Code here will likely not execute unless there was an immediate issue with the redirect call.
       // The actual `upgradeToPaid()` and success messages should be handled on your
       // success_url page (configured in your Stripe Checkout Session on the backend),
       // after Stripe confirms the payment and redirects the user back.
       // Or, more robustly, via a Stripe webhook processed by your backend.
+      // setIsProcessingPayment(false); // This line may not be reached if redirect is successful.
 
     } catch (error: any) {
       console.error("Stripe Checkout Process Error:", error);
@@ -238,5 +271,3 @@ export function SubscriptionCard() {
     </Card>
   );
 }
-
-    
