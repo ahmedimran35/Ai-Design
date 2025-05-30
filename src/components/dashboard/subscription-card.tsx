@@ -1,7 +1,8 @@
 
 "use client";
 
-import * as React from "react";
+import *
+as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
@@ -67,42 +68,47 @@ export function SubscriptionCard() {
         return;
       }
       
-      // ========================================================
-      // STEP 1: Call your backend to create a Checkout Session
-      // This is a SIMULATED backend call. In a real application, you would
-      // fetch this from an endpoint on your server, e.g., /api/create-checkout-session
-      // Your backend would use your Stripe SECRET KEY to create the session.
-      // IMPORTANT: You MUST replace this with a real API call to your backend.
-      // ========================================================
-      toast({ title: "Fetching Checkout Session...", description: "Connecting to backend (simulated)..."});
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network latency
-      
-      // IMPORTANT: This `sessionIdToUse` MUST be replaced by fetching a real session ID 
-      // from your backend API endpoint.
-      const sessionIdToUse = `cs_test_FAKE_${Date.now().toString(36)}`; 
+      // ==========================================================================================
+      // CRITICAL STEP: Fetch a REAL Stripe Checkout Session ID from YOUR BACKEND
+      // The line below is a PLACEHOLDER. You MUST replace this with an API call
+      // to your server, which uses your Stripe SECRET KEY to create a Checkout Session.
       // Example:
-      // const response = await fetch('/api/create-checkout-session', { method: 'POST' });
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.error || 'Failed to create checkout session');
-      // }
-      // const { sessionId } = await response.json(); // Use 'sessionId' from your backend
-      // const sessionIdToUse = sessionId; // Assign real sessionId here
-      // toast({ title: "Checkout Session Created", description: "Redirecting to Stripe..."});
-      // ========================================================
+      //   const response = await fetch('/api/create-checkout-session', { method: 'POST' });
+      //   if (!response.ok) {
+      //     const errorData = await response.json();
+      //     throw new Error(errorData.error || 'Failed to create checkout session on backend');
+      //   }
+      //   const { sessionId } = await response.json(); // Use 'sessionId' from your backend
+      //   const sessionIdToUse = sessionId; 
+      // ==========================================================================================
+      
+      // For demonstration, this remains a placeholder. REPLACE IT!
+      toast({ title: "Fetching Checkout Session from Backend (Simulated)...", description: "Ensure this is replaced with a real backend call."});
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network latency for backend call
+      const sessionIdToUse: string | null = `cs_test_MUST_BE_REPLACED_BY_REAL_BACKEND_ID_${Date.now().toString(36)}`;
+      // ==========================================================================================
+
+
+      // Check if the session ID is still the placeholder or empty
+      if (!sessionIdToUse || sessionIdToUse.includes("MUST_BE_REPLACED_BY_REAL_BACKEND_ID")) {
+        console.error("CRITICAL ERROR: A valid Stripe Checkout Session ID was not provided by the backend. Value received:", sessionIdToUse);
+        toast({
+          variant: "destructive",
+          title: "Backend Error: Invalid Session ID",
+          description: "The application did not receive a valid Checkout Session ID from the backend. Please ensure your backend is correctly creating and returning a Stripe session ID.",
+          duration: 10000, 
+        });
+        setIsProcessingPayment(false);
+        return;
+      }
 
       toast({
         title: "Redirecting to Payment...",
         description: "You will be redirected to Stripe to complete your payment.",
       });
 
-      // ========================================================
-      // STEP 2: Redirect to Stripe Checkout
-      // Ensure `sessionIdToUse` is the actual session ID from your backend.
-      // ========================================================
-      console.log("Attempting to redirect to Stripe with Session ID:", sessionIdToUse); // Log the session ID
+      console.log("Attempting to redirect to Stripe with Session ID:", sessionIdToUse);
       const { error } = await stripe.redirectToCheckout({ sessionId: sessionIdToUse });
-      // ========================================================
 
       if (error) {
         console.error("Stripe redirectToCheckout error:", error);
@@ -110,18 +116,19 @@ export function SubscriptionCard() {
         if (error.message && error.message.includes("Failed to set a named property 'href' on 'Location'")) {
             description = "Could not redirect to Stripe, possibly due to running in a sandboxed iframe (common in development previews). Please test in a standalone browser window or after deployment. Also, ensure a real Stripe Session ID from your backend is being used.";
         } else if (error.message && (error.message.toLowerCase().includes("invalid session id") || error.message.toLowerCase().includes("no such checkout session"))) {
-            description = "The provided Stripe Session ID is invalid or expired. Please ensure your backend is generating a correct and active Session ID.";
+            description = "The provided Stripe Session ID is invalid or expired. Please ensure your backend is generating a correct and active Session ID. Check the browser console for the ID used.";
         }
         toast({ 
             variant: "destructive", 
             title: "Redirection Error", 
-            description: description 
+            description: description,
+            duration: 10000,
         });
         setIsProcessingPayment(false);
         return;
       }
 
-      // IMPORTANT: If redirectToCheckout is successful, the user is navigated away from this page.
+      // If redirectToCheckout is successful, the user is navigated away from this page.
       // Code here will likely not execute unless there was an immediate issue with the redirect call.
       // The actual `upgradeToPaid()` and success messages should be handled on your
       // success_url page (configured in your Stripe Checkout Session on the backend),
@@ -133,12 +140,11 @@ export function SubscriptionCard() {
       toast({
         variant: "destructive",
         title: "Payment Process Failed",
-        description: error.message || "An unexpected error occurred during the payment process.",
+        description: error.message || "An unexpected error occurred during the payment process. Check console for details.",
+        duration: 10000,
       });
       setIsProcessingPayment(false);
     }
-    // `setIsProcessingPayment(false)` is primarily handled in error cases above,
-    // as a successful redirect means the user leaves this page.
   };
 
   return (
@@ -214,7 +220,7 @@ export function SubscriptionCard() {
             )}
              {STRIPE_PUBLIC_KEY && STRIPE_PUBLIC_KEY !== "your_actual_stripe_publishable_key_here" && (
               <p className="text-xs text-muted-foreground mt-3">
-                Click "Upgrade to Premium" to proceed with a secure Stripe payment.
+                Click "Upgrade to Premium" to proceed with a secure Stripe payment. Ensure backend integration for session ID.
               </p>
             )}
           </div>
@@ -232,3 +238,5 @@ export function SubscriptionCard() {
     </Card>
   );
 }
+
+    
