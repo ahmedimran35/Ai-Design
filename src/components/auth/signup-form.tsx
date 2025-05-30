@@ -19,7 +19,6 @@ import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlus } from "lucide-react";
-import { AuthError } from "firebase/auth";
 
 const signupFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -56,7 +55,8 @@ export function SignupForm() {
       router.push("/"); // Redirect to landing page after signup
     } catch (error: any) {
       let errorMessage = "An unknown error occurred during signup.";
-      if (error instanceof AuthError) { // Check if it's a Firebase AuthError
+      // Check if it's a Firebase Auth error by looking for the 'code' property
+      if (error && typeof error.code === 'string') {
         switch (error.code) {
           case "auth/email-already-in-use":
             errorMessage = "This email address is already in use by another account.";
@@ -68,10 +68,12 @@ export function SignupForm() {
             errorMessage = "The password is too weak. Please choose a stronger password.";
             break;
           default:
-            errorMessage = "Signup failed. Please try again.";
+            // Use Firebase's message for unhandled codes, or a generic one
+            errorMessage = `Signup failed: ${error.message || 'Please try again.'}`;
+            console.error("Unhandled Firebase Auth error during signup:", error);
             break;
         }
-      } else if (error.message) {
+      } else if (error && typeof error.message === 'string') { // Fallback for non-Firebase errors or errors without a code
         errorMessage = error.message;
       }
       toast({
@@ -79,7 +81,7 @@ export function SignupForm() {
         title: "Signup Failed",
         description: errorMessage,
       });
-      console.error("Signup form error:", error);
+      console.error("Signup form error details:", error);
     }
   }
 

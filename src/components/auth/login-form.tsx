@@ -19,7 +19,6 @@ import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { LogIn } from "lucide-react";
-import { AuthError } from "firebase/auth";
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -51,11 +50,12 @@ export function LoginForm() {
       router.push("/"); // Redirect to landing page after login
     } catch (error: any) {
       let errorMessage = "An unknown error occurred during login.";
-      if (error instanceof AuthError) { // Check if it's a Firebase AuthError
+      // Check if it's a Firebase Auth error by looking for the 'code' property
+      if (error && typeof error.code === 'string') {
         switch (error.code) {
           case "auth/user-not-found":
           case "auth/wrong-password":
-          case "auth/invalid-credential":
+          case "auth/invalid-credential": // Common code for invalid email/password
             errorMessage = "Invalid email or password. Please try again.";
             break;
           case "auth/invalid-email":
@@ -65,10 +65,12 @@ export function LoginForm() {
             errorMessage = "This user account has been disabled.";
             break;
           default:
-            errorMessage = "Login failed. Please try again.";
+            // Use Firebase's message for unhandled codes, or a generic one
+            errorMessage = `Login failed: ${error.message || 'Please try again.'}`;
+            console.error("Unhandled Firebase Auth error during login:", error);
             break;
         }
-      } else if (error.message) {
+      } else if (error && typeof error.message === 'string') { // Fallback for non-Firebase errors or errors without a code
         errorMessage = error.message;
       }
       toast({
@@ -76,7 +78,7 @@ export function LoginForm() {
         title: "Login Failed",
         description: errorMessage,
       });
-      console.error("Login form error:", error);
+      console.error("Login form error details:", error);
     }
   }
 
