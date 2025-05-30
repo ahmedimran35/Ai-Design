@@ -99,19 +99,21 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="space-y-3 pt-4">
+                  <div className="space-y-4 pt-4">
                     {results.flaws.map((flaw, index) => (
-                      <div key={`flaw-${index}`} className="p-4 border border-destructive/30 rounded-lg shadow-sm bg-card space-y-2 hover:shadow-md transition-shadow">
-                        <div className="flex items-start gap-2">
-                          <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
-                          <div className="flex-1">
-                            <h4 className="text-md font-semibold text-destructive">Issue #{index + 1}</h4>
-                            <p className="text-sm text-foreground/90 mt-1">
-                              {flaw}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                       <Card key={`flaw-${index}`} className="border-destructive/40 shadow-sm hover:shadow-md transition-shadow bg-card">
+                        <CardHeader className="flex flex-row items-center space-y-0 pb-2 pt-4 px-4">
+                          <AlertTriangle className="h-5 w-5 text-destructive mr-3 flex-shrink-0" />
+                          <CardTitle className="text-md font-semibold text-destructive">
+                            Identified Issue #{index + 1}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-4 px-4 pl-12"> {/* Indent content to align with title */}
+                          <p className="text-sm text-foreground/90">
+                            {flaw}
+                          </p>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
                 </AccordionContent>
@@ -148,7 +150,7 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
                   <div className="space-y-4">
                     {results.improvements.map((item, index) => (
                       <div key={`improvement-${index}`} className="p-4 border border-border/70 rounded-lg shadow-sm bg-card space-y-3 hover:shadow-md transition-shadow">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                           {getIconForArea(item.area)}
                           <h4 className="font-semibold text-base text-primary">{item.area}</h4>
                         </div>
@@ -172,4 +174,3 @@ export function AnalysisResults({ results, isLoading, error }: AnalysisResultsPr
     </Card>
   );
 }
-
