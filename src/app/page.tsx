@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { UploadCloud, SearchCode, Lightbulb, Palette, AlignHorizontalDistributeCenter, Eye, Wand2, CheckCircle, Star, Sparkles, Zap, Users } from "lucide-react";
+import { UploadCloud, SearchCode, Lightbulb, Palette, AlignHorizontalDistributeCenter, Eye, Wand2, CheckCircle, Star, Sparkles, Zap, Users, Layers } from "lucide-react"; // Added Layers
 import Link from "next/link";
 import Image from "next/image";
 
@@ -36,17 +36,20 @@ export default function HomePage() {
             {/* Image Column */}
             <div className="relative w-full max-w-xl mx-auto lg:mx-0 rounded-lg overflow-hidden shadow-2xl group">
               <Image
-                src="https://placehold.co/640x360.png" 
+                src="https://placehold.co/640x360.png"
                 alt="AI-powered design analysis in action"
                 width={640}
                 height={360}
                 priority
                 data-ai-hint="futuristic design interface"
-                className="w-full h-auto block" 
+                className="w-full h-auto block"
               />
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/20 opacity-80 group-hover:opacity-50 transition-opacity duration-500"></div>
               <div className="absolute top-4 left-4 p-2 bg-background/70 backdrop-blur-sm rounded-md shadow">
                 <Sparkles className="h-5 w-5 text-primary" />
+              </div>
+              <div className="absolute bottom-4 right-4 p-2 bg-background/70 backdrop-blur-sm rounded-md shadow">
+                <Layers className="h-5 w-5 text-accent" />
               </div>
             </div>
           </div>
