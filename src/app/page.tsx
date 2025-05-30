@@ -11,7 +11,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="w-full py-16 md:py-24 lg:py-32 bg-gradient-to-br from-background via-muted/30 to-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 lg:items-start"> {/* Changed items-center to lg:items-start */}
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16"> {/* Removed lg:items-start */}
             {/* Text Content Column */}
             <div className="space-y-6 md:space-y-8 text-center lg:text-left">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">
@@ -151,4 +151,3 @@ export default function HomePage() {
     </div>
   );
 }
-
