@@ -99,7 +99,7 @@ export default function DashboardPage() {
 
       {(analysisResult || analysisError) && !isLoadingAnalysis && (
         <div className="mt-8 flex justify-center">
-          <Button onClick={handleAnalyzeAnother} size="lg" variant="outline" className="shadow-sm hover:shadow-md transition-shadow">
+          <Button onClick={handleAnalyzeAnother} size="lg" variant="outline" className="shadow-sm hover:shadow-lg transition-all duration-200 ease-in-out transform hover:-translate-y-0.5">
             <RefreshCcw className="mr-2 h-5 w-5" /> Analyze Another Image
           </Button>
         </div>

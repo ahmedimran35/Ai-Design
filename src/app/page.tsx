@@ -34,7 +34,7 @@ export default function HomePage() {
             </div>
 
             {/* Insight Text Column */}
-            <div className="relative w-full max-w-xl mx-auto lg:mx-0 p-6 md:p-8 bg-card/80 backdrop-blur-sm rounded-lg shadow-xl border border-border/30 group h-full">
+            <div className="relative w-full max-w-xl mx-auto lg:mx-0 p-6 md:p-8 bg-card/80 backdrop-blur-sm rounded-lg shadow-xl border border-border/30 group h-full transition-all duration-300 ease-in-out transform hover:scale-[1.02] hover:shadow-2xl">
               <div className="flex items-center mb-4">
                 <Brain className="h-10 w-10 text-primary mr-3 group-hover:animate-pulse" />
                 <h2 className="text-2xl font-semibold text-primary">The Alchemist's Secret</h2>
@@ -103,7 +103,7 @@ export default function HomePage() {
             { icon: Eye, title: "Readability Boost", description: "Improve text legibility and contrast, ensuring a better user experience for everyone." },
             { icon: CheckCircle, title: "Hierarchy Clarity", description: "Guide user attention effectively by refining your design's visual structure and focal points." },
           ].map((feature, index) => (
-            <Card key={index} className="shadow-md hover:shadow-lg transition-shadow duration-300 bg-card/90 backdrop-blur-sm border border-border/30 group p-1">
+            <Card key={index} className="shadow-md bg-card/90 backdrop-blur-sm border border-border/30 group p-1 transition-all duration-300 ease-in-out transform hover:-translate-y-1.5 hover:shadow-xl">
               <CardHeader className="pb-3">
                  <div className="p-3 bg-accent/10 rounded-lg mb-3 w-fit transition-colors duration-300 group-hover:bg-accent/20 border border-accent/20">
                   <feature.icon className="h-7 w-7 text-accent transition-transform duration-300 group-hover:scale-110" />
@@ -124,7 +124,7 @@ export default function HomePage() {
           <Zap className="h-12 w-12 text-primary mx-auto animate-pulse" />
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Loved by Designers</h2>
           <div className="relative">
-            <blockquote className="text-xl italic text-foreground/80 p-6 bg-background rounded-lg shadow-xl border border-border/30">
+            <blockquote className="text-xl italic text-foreground/80 p-6 bg-background rounded-lg shadow-xl border border-border/30 transition-all duration-300 ease-in-out transform hover:scale-[1.03] hover:shadow-2xl">
               &quot;Design Alchemist transformed how I iterate on my UI mockups. The AI feedback is incredibly insightful and saves me hours!&quot;
             </blockquote>
             <p className="mt-4 text-md font-semibold text-primary">- Alex P., Lead UI/UX Designer</p>
