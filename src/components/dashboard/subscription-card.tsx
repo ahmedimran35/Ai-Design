@@ -42,7 +42,7 @@ export function SubscriptionCard() {
       toast({
         variant: "destructive",
         title: "Configuration Error",
-        description: "Stripe public key is not configured correctly. Admin: Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env file and restart your development server.",
+        description: "Stripe public key is not configured. Admin: Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env file and restart your development server.",
       });
       console.error("Stripe public key is not set or is using the placeholder in environment variables (NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY).");
       setIsProcessingPayment(false);
@@ -75,7 +75,7 @@ export function SubscriptionCard() {
       // ========================================================
       toast({ title: "Fetching Checkout Session...", description: "Connecting to backend (simulated)..."});
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network latency
-      const simulatedSessionId = `cs_test_FAKE_${Date.now().toString(36)}`; // IMPORTANT: This is a FAKE session ID
+      const simulatedSessionId = `cs_test_FAKE_${Date.now().toString(36)}`; // IMPORTANT: This is a FAKE session ID for frontend testing only.
       // In a real app, replace `simulatedSessionId` with `sessionId` from your backend.
       // Example:
       // const response = await fetch('/api/create-checkout-session', { method: 'POST' });
@@ -87,6 +87,18 @@ export function SubscriptionCard() {
       // toast({ title: "Checkout Session Created", description: "Redirecting to Stripe..."});
       // ========================================================
 
+      // CRITICAL CHECK: Ensure a real session ID is used before redirecting.
+      if (simulatedSessionId.includes("FAKE_")) {
+        console.error("CRITICAL: Attempting to redirect to Stripe with a FAKE session ID. You MUST implement a backend to generate a real Stripe Checkout Session ID.");
+        toast({
+          variant: "destructive",
+          title: "Backend Implementation Required",
+          description: "A real Stripe Checkout Session ID from your backend is needed. This is currently a FAKE ID for testing. Please implement your backend API to create a session.",
+          duration: 10000, // Keep this message longer
+        });
+        setIsProcessingPayment(false);
+        return; // Stop before attempting redirect with a fake ID
+      }
 
       toast({
         title: "Redirecting to Payment...",
@@ -226,5 +238,3 @@ export function SubscriptionCard() {
     </Card>
   );
 }
-
-    
