@@ -34,7 +34,7 @@ export default function HomePage() {
             </div>
 
             {/* Insight Text Column */}
-            <div className="relative w-full max-w-xl mx-auto lg:mx-0 p-6 md:p-8 bg-card/80 backdrop-blur-sm rounded-lg shadow-xl border border-border/30 group">
+            <div className="relative w-full max-w-xl mx-auto lg:mx-0 p-6 md:p-8 bg-card/80 backdrop-blur-sm rounded-lg shadow-xl border border-border/30 group h-full">
               <div className="flex items-center mb-4">
                 <Brain className="h-10 w-10 text-primary mr-3 group-hover:animate-pulse" />
                 <h2 className="text-2xl font-semibold text-primary">The Alchemist's Secret</h2>
@@ -151,3 +151,4 @@ export default function HomePage() {
     </div>
   );
 }
+
