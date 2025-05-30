@@ -26,6 +26,7 @@ const FREE_TIER_LIMIT = 3;
 // It should be set in your .env file as NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 // Ensure you have a .env file in your project root with:
 // NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your_actual_stripe_publishable_key_here"
+// This variable is accessed in the `handleStripeCheckout` function.
 const STRIPE_PUBLIC_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY; 
 
 export function SubscriptionCard() {
@@ -76,7 +77,7 @@ export function SubscriptionCard() {
       toast({ title: "Fetching Checkout Session...", description: "Connecting to backend (simulated)..."});
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network latency
       
-      // IMPORTANT: This `simulatedSessionId` MUST be replaced by fetching a real session ID 
+      // IMPORTANT: This `sessionIdToUse` MUST be replaced by fetching a real session ID 
       // from your backend API endpoint.
       const sessionIdToUse = `cs_test_FAKE_${Date.now().toString(36)}`; 
       // Example:
@@ -86,10 +87,9 @@ export function SubscriptionCard() {
       //   throw new Error(errorData.error || 'Failed to create checkout session');
       // }
       // const { sessionId } = await response.json(); // Use 'sessionId' from your backend
-      // const sessionIdToUse = sessionId;
+      // const sessionIdToUse = sessionId; // Assign real sessionId here
       // toast({ title: "Checkout Session Created", description: "Redirecting to Stripe..."});
       // ========================================================
-
 
       toast({
         title: "Redirecting to Payment...",
@@ -100,6 +100,7 @@ export function SubscriptionCard() {
       // STEP 2: Redirect to Stripe Checkout
       // Ensure `sessionIdToUse` is the actual session ID from your backend.
       // ========================================================
+      console.log("Attempting to redirect to Stripe with Session ID:", sessionIdToUse); // Log the session ID
       const { error } = await stripe.redirectToCheckout({ sessionId: sessionIdToUse });
       // ========================================================
 
@@ -108,6 +109,8 @@ export function SubscriptionCard() {
         let description = error.message || "Could not redirect to Stripe. Please try again.";
         if (error.message && error.message.includes("Failed to set a named property 'href' on 'Location'")) {
             description = "Could not redirect to Stripe, possibly due to running in a sandboxed iframe (common in development previews). Please test in a standalone browser window or after deployment. Also, ensure a real Stripe Session ID from your backend is being used.";
+        } else if (error.message && (error.message.toLowerCase().includes("invalid session id") || error.message.toLowerCase().includes("no such checkout session"))) {
+            description = "The provided Stripe Session ID is invalid or expired. Please ensure your backend is generating a correct and active Session ID.";
         }
         toast({ 
             variant: "destructive", 
