@@ -1,13 +1,14 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ImageUploadForm } from "@/components/dashboard/image-upload-form";
 import { AnalysisResults } from "@/components/dashboard/analysis-results";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, ShieldAlert } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Loader2, ShieldAlert, RefreshCcw } from "lucide-react";
 import type { SuggestDesignImprovementsOutput } from "@/ai/flows/suggest-design-improvements";
 
 interface DesignAnalysisResult {
@@ -24,6 +25,8 @@ export default function DashboardPage() {
   const { isAuthenticated, user } = useAuth();
   const router = useRouter();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  const imageUploadFormRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -58,6 +61,12 @@ export default function DashboardPage() {
     setAnalysisResult(null);
   };
 
+  const handleAnalyzeAnother = () => {
+    setAnalysisResult(null);
+    setAnalysisError(null);
+    imageUploadFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   if (isCheckingAuth) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] text-center">
@@ -88,11 +97,21 @@ export default function DashboardPage() {
         </CardHeader>
       </Card>
 
-      <ImageUploadForm
-        onAnalysisStart={handleAnalysisStart}
-        onAnalysisComplete={handleAnalysisComplete}
-        onAnalysisError={handleAnalysisError}
-      />
+      <div ref={imageUploadFormRef} className="scroll-mt-20"> {/* Added scroll-mt for better positioning after scroll */}
+        <ImageUploadForm
+          onAnalysisStart={handleAnalysisStart}
+          onAnalysisComplete={handleAnalysisComplete}
+          onAnalysisError={handleAnalysisError}
+        />
+      </div>
+
+      {(analysisResult || analysisError) && !isLoadingAnalysis && (
+        <div className="mt-8 flex justify-center">
+          <Button onClick={handleAnalyzeAnother} size="lg" variant="outline" className="shadow-sm hover:shadow-md transition-shadow">
+            <RefreshCcw className="mr-2 h-5 w-5" /> Analyze Another Image
+          </Button>
+        </div>
+      )}
 
       <AnalysisResults
         results={analysisResult}
