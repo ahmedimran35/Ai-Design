@@ -86,7 +86,7 @@ export function SignupForm() {
   }
 
   return (
-    <Card className="w-full max-w-md shadow-xl">
+    <Card className="w-full max-w-md shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-[1.02]">
       <CardHeader className="text-center">
         <div className="mx-auto p-3 bg-primary/10 rounded-full w-fit mb-2">
           <UserPlus className="h-8 w-8 text-primary" />

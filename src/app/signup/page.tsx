@@ -29,7 +29,7 @@ export default function SignupPage() {
   // If auth is loaded and user is not authenticated, show signup form
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] py-12">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] py-12 animate-in fade-in duration-500">
         <SignupForm />
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
